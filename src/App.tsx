@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import "./App.css";
@@ -18,55 +17,52 @@ function App() {
 
   const { errors } = formState;
 
-  useEffect(() => {
-    if (errors.firstName) {
-      document.getElementById("firstName-error")?.focus();
-    }
-
-    if (errors.lastName) {
-      document.getElementById("lastName-error")?.focus();
-    }
-
-    if (errors.signature) {
-      document.getElementById("signature-error")?.focus();
-    }
-  }, [errors]);
-
   const firstName = watch("firstName");
   const lastName = watch("lastName");
 
-  const isValidName = (input: string) => {
-    const regex = /^[A-Z][a-zA-Z ]{1,}$/;
+  const normalizeName = (name: string) => {
+    return name.replace(/\s+/g, " ").trim();
+  };
+  const isValidName = (value: string) => {
+    if (!value || value.trim().length < 2)
+      return "Must be at least 2 characters";
+    if (/^\s/.test(value)) return "Cannot start with a space";
+    if (/\s$/.test(value)) return "Cannot end with a space";
+    if (value.trim().length === 0) return "Cannot be only spaces";
+    if (!/[A-Za-z]/.test(value)) return "Must contain letters";
+    if (!/^[A-Z]/.test(value.trim()))
+      return "First letter must be capital case";
+    if (/\d/.test(value)) return "Numbers are not allowed";
 
-    if (!regex.test(input))
-      return "Should start with capital letter, then only letters/spaces (min 2 characters)";
-
-    if (input !== input.trim()) return "Should not have leading/trailing space";
-
-    if (input.trim().length === 0) return "Cannot be only spaces";
+    const allowedCharactersRegex = /^[A-Za-z .'\-_]+$/;
+    if (!allowedCharactersRegex.test(value)) {
+      return "Only letters, spaces, ., ', -, and _ are allowed";
+    }
 
     return true;
   };
 
-  const isValidSignature = (input: string) => {
-    if (!firstName || !lastName) return "Name data missing";
+  const isValidSignature = (signature: string) => {
+    if (!signature) return "Consent Signature is required";
 
-    const first3 = firstName.substring(0, 3).toLowerCase();
-    const last = lastName.toLowerCase();
-    const userInput = input.toLowerCase();
+    const firstPart = firstName?.slice(0, 3) || "";
+    const expected = normalizeName(
+      `${firstPart} ${lastName}`.toLowerCase().trim()
+    );
+    const actual = signature.toLowerCase().trim();
 
-    if (!userInput.startsWith(first3))
-      return `Signature must start with first 3 letters of first name (${first3})`;
-
-    if (userInput.slice(3) !== last)
-      return `Signature must end with the last name (${last})`;
+    if (actual !== expected) {
+      return `Consent Signature must match "${firstPart} ${lastName}"`;
+    }
 
     return true;
   };
 
   const onSubmit = (data: FormValue) => {
     alert(
-      `The data entered is: ${data.firstName}, ${data.lastName}, ${data.signature}`
+      `The data entered is: ${normalizeName(data.firstName)}, ${normalizeName(
+        data.lastName
+      )}, ${data.signature}`
     );
     console.log(data);
     reset();
