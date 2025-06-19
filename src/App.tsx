@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import "./App.css";
+import FormInput from "./components/FormInput";
 
 type FormValue = {
   firstName: string;
@@ -75,80 +76,38 @@ function App() {
     <main tabIndex={0} className="form-container">
       <h1 tabIndex={0}>Form</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="form-group">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            id="firstName"
-            type="text"
-            placeholder="First Name"
-            aria-invalid={errors.firstName ? "true" : "false"}
-            aria-describedby={errors.firstName ? "firstName-error" : undefined}
-            {...register("firstName", {
-              required: "First Name is required",
-              validate: isValidName,
-            })}
-          />
-          {errors.firstName && (
-            <p
-              role="alert"
-              tabIndex={-1}
-              className="error-message"
-              id="firstName-error"
-            >
-              {errors.firstName.message}
-            </p>
-          )}
-        </div>
+        <FormInput
+          label="First Name"
+          id="firstName"
+          placeholder="First Name"
+          error={errors.firstName}
+          registration={register("firstName", {
+            required: "First Name is required",
+            validate: isValidName,
+          })}
+        />
 
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            type="text"
-            id="lastName"
-            placeholder="Last Name"
-            aria-invalid={errors.lastName ? "true" : "false"}
-            aria-describedby={errors.lastName ? "lastName-error" : undefined}
-            {...register("lastName", {
-              required: "Last Name is required",
-              validate: isValidName,
-            })}
-          />
-          {errors.lastName && (
-            <p
-              role="alert"
-              tabIndex={-1}
-              className="error-message"
-              id="lastName-error"
-            >
-              {errors.lastName.message}
-            </p>
-          )}
-        </div>
+        <FormInput
+          label="Last Name"
+          id="lastName"
+          placeholder="Last Name"
+          error={errors.lastName}
+          registration={register("lastName", {
+            required: "Last Name is required",
+            validate: isValidName,
+          })}
+        />
 
-        <div className="form-group">
-          <label htmlFor="signature">Signature</label>
-          <input
-            type="text"
-            id="signature"
-            placeholder="Signature"
-            aria-invalid={errors.signature ? "true" : "false"}
-            aria-describedby={errors.signature ? "signature-error" : undefined}
-            {...register("signature", {
-              required: "Signature is required",
-              validate: isValidSignature,
-            })}
-          />
-          {errors.signature && (
-            <p
-              role="alert"
-              tabIndex={-1}
-              className="error-message"
-              id="signature-error"
-            >
-              {errors.signature.message}
-            </p>
-          )}
-        </div>
+        <FormInput
+          label="Signature"
+          id="signature"
+          placeholder="Signature"
+          error={errors.signature}
+          registration={register("signature", {
+            required: "Signature is required",
+            validate: isValidSignature,
+          })}
+        />
 
         <button type="submit" className="submit-button">
           Submit
